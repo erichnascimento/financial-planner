@@ -6,7 +6,7 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>Planejador Financeiro</name>
-	<description>Um novo jeito de planejar as finanças</description>
+	<description>A new way of planning personal finances</description>
 	<modules>
 		<module>financial-planner-storage</module>
 	</modules>
