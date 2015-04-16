@@ -1,63 +1,34 @@
 package financialplanner.storage;
 
-import com.mongodb.MongoClient;
 import financialplanner.models.accounts.Account;
 import financialplanner.storage.collections.Accounts;
 import org.mongodb.morphia.Datastore;
-import org.mongodb.morphia.Morphia;
-
-import java.util.logging.Logger;
 
 
 public class Storage {
 	private static Accounts accounts;
-	private static Morphia morphia;
-	private static Datastore datastore;
-	private static MongoClient mongoClient;
+	private static MongoConnection connection;
 
-	private static MongoClient getMongoClient() {
-		if (mongoClient == null) {
-			mongoClient = new MongoClient();
+	public static Datastore getDataStore() {
+		if (connection == null) {
+			connection = new MongoConnection("financial-planner");
 		}
 
-		return mongoClient;
+		return connection.getDatastore();
 	}
 
-	private static Datastore getDatastore() {
-		if (datastore == null) {
-			datastore = getMorphia().createDatastore(getMongoClient(), "financial-planner");
+	public static void close() {
+		if (connection != null) {
+			accounts = null;
+			connection.close();
 		}
-
-		return datastore;
-	}
-
-	private static Morphia getMorphia() {
-		if (morphia == null) {
-			morphia = new Morphia();
-		}
-
-		return morphia;
 	}
 
 	public static Accounts accounts() {
 		if (accounts == null) {
-			accounts = new Accounts(getDatastore(), Account.class);
+			accounts = new Accounts(getDataStore(), Account.class);
 		}
 
 		return accounts;
-	}
-
-	public static void close() {
-		if (mongoClient == null) {
-			Logger.getGlobal().info("Storage was closed");
-			return;
-		}
-
-		Logger.getGlobal().info("Closing storage...");
-		datastore = null;
-		morphia = null;
-		accounts = null;
-		mongoClient.close();
-		Logger.getGlobal().info("Storage closed");
 	}
 }
